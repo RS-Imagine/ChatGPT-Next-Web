@@ -1,4 +1,3 @@
-import { ServiceProvider } from "@/app/constant";
 import { ModalConfigValidator, ModelConfig } from "../store";
 
 import Locale from "../locales";
@@ -11,25 +10,25 @@ export function ModelConfigList(props: {
   updateConfig: (updater: (config: ModelConfig) => void) => void;
 }) {
   const allModels = useAllModels();
-  const value = `${props.modelConfig.model}@${props.modelConfig?.providerName}`;
 
   return (
     <>
       <ListItem title={Locale.Settings.Model}>
         <Select
-          value={value}
+          value={props.modelConfig.model}
           onChange={(e) => {
-            const [model, providerName] = e.currentTarget.value.split("@");
-            props.updateConfig((config) => {
-              config.model = ModalConfigValidator.model(model);
-              config.providerName = providerName as ServiceProvider;
-            });
+            props.updateConfig(
+              (config) =>
+                (config.model = ModalConfigValidator.model(
+                  e.currentTarget.value,
+                )),
+            );
           }}
         >
           {allModels
             .filter((v) => v.available)
             .map((v, i) => (
-              <option value={`${v.name}@${v.provider?.providerName}`} key={i}>
+              <option value={v.name} key={i}>
                 {v.displayName}({v.provider?.providerName})
               </option>
             ))}
@@ -93,7 +92,7 @@ export function ModelConfigList(props: {
         ></input>
       </ListItem>
 
-      {props.modelConfig?.providerName == ServiceProvider.Google ? null : (
+      {props.modelConfig.model.startsWith("gemini") ? null : (
         <>
           <ListItem
             title={Locale.Settings.PresencePenalty.Title}

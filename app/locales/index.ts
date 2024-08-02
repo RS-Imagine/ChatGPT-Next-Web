@@ -97,17 +97,7 @@ function setItem(key: string, value: string) {
 
 function getLanguage() {
   try {
-    const locale = new Intl.Locale(navigator.language).maximize();
-    const region = locale?.region?.toLowerCase();
-    // 1. check region code in ALL_LANGS
-    if (AllLangs.includes(region as Lang)) {
-      return region as Lang;
-    }
-    // 2. check language code in ALL_LANGS
-    if (AllLangs.includes(locale.language as Lang)) {
-      return locale.language as Lang;
-    }
-    return DEFAULT_LANG;
+    return navigator.language.toLowerCase();
   } catch {
     return DEFAULT_LANG;
   }
@@ -120,7 +110,15 @@ export function getLang(): Lang {
     return savedLang as Lang;
   }
 
-  return getLanguage();
+  const lang = getLanguage();
+
+  for (const option of AllLangs) {
+    if (lang.includes(option)) {
+      return option;
+    }
+  }
+
+  return DEFAULT_LANG;
 }
 
 export function changeLang(lang: Lang) {
